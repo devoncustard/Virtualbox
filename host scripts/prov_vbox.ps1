@@ -15,6 +15,7 @@ echo "path is $p"
 
 if (Test-Path $VAGRANT_BASE_FOLDER\$environment\$p)
 {
+    xmppalert -m "Removing old install" -c bothouse@conference.gibber.devops.local
     cd $VAGRANT_BASE_FOLDER\$environment\$p
     if (Test-Path vagrantfile) {vagrant destroy -f}
     cmd.exe /c del *.* /s /q
@@ -23,6 +24,7 @@ if (Test-Path $VAGRANT_BASE_FOLDER\$environment\$p)
 }
 else
 {
+    xmppalert -m "Creating new vagrant folder" -c bothouse@conference.gibber.devops.local
     cd $VAGRANT_BASE_FOLDER
    
     if (!(Test-Path $environment)) 
@@ -35,11 +37,25 @@ else
 
 if (!(Test-Path ISO)){mkdir ISO}
 
-
 vagrant init
 del vagrantfile
 $ip=$p+".iso"
+
+# Generate bash script to clean up puppet etc.
+xmppalert -m "Cleaning up old certs and adding details to ENC" -c bothouse@conference.gibber.devops.local
+write-output "puppet cert clean ${hostname}.${domain}" | out-file -encoding ascii "${p}.sh"
+write-output "cd /usr/share/puppet-dashboard" | out-file -encoding ascii -append "${hostname}.${domain}.sh"
+write-output "rake RAILS_ENV=production node:del name=${hostname}.${domain}" | out-file -encoding ascii -append "${hostname}.${domain}.sh"
+write-output "rake RAILS_ENV=production node:add name=${hostname}.${domain} classes=${classes}" | out-file -encoding ascii -append "${hostname}.${domain}.sh"
+
+plink -l root -pw olorin puppet.devops.local -m "${hostname}.${domain}.sh"
+
+
+
+
 # Create the vagrant file
+xmppalert -m "Creating vagrant file" -c bothouse@conference.gibber.devops.local
+
 write-output "# -*- mode: ruby -*-" | out-file -encoding ascii $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
 write-output "# vi: set ft=ruby :"|out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
 write-output "# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!"|out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
@@ -65,13 +81,15 @@ write-output "        end" |out-file -encoding ascii -append $VAGRANT_BASE_FOLDE
 write-output "    end" |out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
 write-output "end" |out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
 
-
+xmppalert -m "Generating metadata" -c bothouse@conference.gibber.devops.local
 write-output "Hostname:${hostname}:" | out-file -encoding ascii ISO\instance.txt
 write-output "PuppetFQDN:${puppet}:" | out-file -encoding ascii -append ISO\instance.txt
 write-output "Domain:${domain}:" | out-file -encoding ascii -append ISO\instance.txt
 write-output "Environment:${environment}:" | out-file -encoding ascii -append ISO\instance.txt
 
 mkisofs -l -J -r -V "METADATA" -o ".\$ip" "ISO"
+
+xmppalert -m "Starting instance, go and make a cuppa." -c bothouse@conference.gibber.devops.local
 
 # Generate bash script to clean up puppet etc.
 write-output "puppet cert clean ${hostname}.${domain}" | out-file -encoding ascii "${p}.sh"
@@ -81,7 +99,5 @@ write-output "rake RAILS_ENV=production node:add name=${hostname}.${domain} clas
 
 plink -l root -pw olorin puppet.devops.local -m "${hostname}.${domain}.sh"
 
-
-
-
 vagrant up
+xmppalert -m "Build complete, please check puppet dashboard to see deployment status" -c bothouse@conference.gibber.devops.local
