@@ -1,6 +1,10 @@
-﻿param ([string]$boxname, [string]$boxos, [string]$hostname, [string]$domain, [string]$puppet, [string]$environment, [string]$user, [string]$password)
+﻿param ([string]$boxname, [string]$boxos, [string]$hostname, [string]$domain, [string]$puppet, [string]$environment, [string]$user, [string]$password, [string]$classes)
 
-   
+
+
+
+  
+
 # Get environment variables
 
 $VAGRANT_BASE_FOLDER=$env:VAGRANT_BASE_FOLDER
@@ -38,10 +42,8 @@ $ip=$p+".iso"
 # Create the vagrant file
 write-output "# -*- mode: ruby -*-" | out-file -encoding ascii $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
 write-output "# vi: set ft=ruby :"|out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
-write-output "'n"out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
 write-output "# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!"|out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
 write-output "VAGRANTFILE_API_VERSION = ""2""" | out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
-write-output "'n"out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
 write-output "Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|"|out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
 write-output "    config.vm.boot_timeout=600"|out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
 write-output "    config.vm.define :$hostname do |guest|" |out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
@@ -70,4 +72,16 @@ write-output "Domain:${domain}:" | out-file -encoding ascii -append ISO\instance
 write-output "Environment:${environment}:" | out-file -encoding ascii -append ISO\instance.txt
 
 mkisofs -l -J -r -V "METADATA" -o ".\$ip" "ISO"
+
+# Generate bash script to clean up puppet etc.
+write-output "puppet cert clean ${hostname}.${domain}" | out-file -encoding ascii "${p}.sh"
+write-output "cd /usr/share/puppet-dashboard" | out-file -encoding ascii -append "${hostname}.${domain}.sh"
+write-output "rake RAILS_ENV=production node:del name=${hostname}.${domain}" | out-file -encoding ascii -append "${hostname}.${domain}.sh"
+write-output "rake RAILS_ENV=production node:add name=${hostname}.${domain} classes=${classes}" | out-file -encoding ascii -append "${hostname}.${domain}.sh"
+
+plink -l root -pw olorin puppet.devops.local -m "${hostname}.${domain}.sh"
+
+
+
+
 vagrant up
