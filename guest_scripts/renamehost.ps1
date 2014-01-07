@@ -2,7 +2,7 @@ $a
 
 switch ($env:BOOTSTRAP)
     {
-        "VirtualBox" { $a=get-content d:\instance.txt }
+        "VirtualBox" { $a=get-content z:\instance.txt }
         "Test" { $a=get-content C:\dropbox\scripts\Sysprep\instance.txt
                  "This script is running on your local test machine Joe!"}
         default { "No Virtual host defined. Unable to locate metadata "
