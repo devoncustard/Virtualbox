@@ -27,16 +27,7 @@ $AutoUpdate = (New-Object -com "Microsoft.Update.AutoUpdate").Settings
 $AutoUpdate.NotificationLevel = 1
 $AutoUpdate.Save()
 Write-Host "Windows Update has been disabled." -ForegroundColor Green
- 
-# Step 5: Disable Complex Passwords
-# Reference: http://vlasenko.org/2011/04/27/removing-password-complexity-requirements-from-windows-server-2008-core/
-$seccfg = [IO.Path]::GetTempFileName()
-secedit /export /cfg $seccfg
-(Get-Content $seccfg) | Foreach-Object {$_ -replace "PasswordComplexity\s*=\s*1", "PasswordComplexity=0"} | Set-Content $seccfg
-secedit /configure /db $env:windir\security\new.sdb /cfg $seccfg /areas SECURITYPOLICY
-del $seccfg
-Write-Host "Complex Passwords have been disabled." -ForegroundColor Green
- 
+  
 # Step 6: Enable Remote Desktop
 # Reference: http://social.technet.microsoft.com/Forums/windowsserver/en-US/323d6bab-e3a9-4d9d-8fa8-dc4277be1729/enable-remote-desktop-connections-with-powershell
 (Get-WmiObject Win32_TerminalServiceSetting -Namespace root\cimv2\TerminalServices).SetAllowTsConnections(1,1)
@@ -57,7 +48,7 @@ Write-Host "Windows Firewall has been disabled." -ForegroundColor Green
 # Step 9: Create local vagrant user
 $userDirectory = [ADSI]"WinNT://localhost"
 $user = $userDirectory.Create("User", "vagrant")
-$user.SetPassword("vagrant")
+$user.SetPassword("Vag-rant1")
 $user.SetInfo()
 $user.UserFlags = 64 + 65536 # ADS_UF_PASSWD_CANT_CHANGE + ADS_UF_DONT_EXPIRE_PASSWD
 $user.SetInfo()
