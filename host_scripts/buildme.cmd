@@ -1,2 +1,4 @@
+@echo %1 %2 %3 %4 %5 %6 %7 %8 %9 
 
-powershell -ExecutionPolicy Unrestricted -File prov_vbox.ps1 -boxname Win2008 -boxos windows -hostname %1 -domain devops.local -puppet puppet.devops.local -environment joe -user vagrant -password Vag-rant1 -classes mcollective_deploy,sysbuild
+
+powershell -ExecutionPolicy Unrestricted -File c:\vtools\host_scripts\prov_vbox.ps1 -boxname %1 -boxos %2 -hostname %3 -domain %4 -puppet %5 -environment %6 -user %7 -password %8 -classes %9
