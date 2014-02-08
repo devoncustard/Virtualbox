@@ -1,6 +1,8 @@
 ﻿param ([string]$boxname, [string]$boxos, [string]$hostname, [string]$domain, [string]$puppet, [string]$environment, [string]$user, [string]$password, [string]$classes)
 
 
+
+
   
 
 # Get environment variables
@@ -9,7 +11,9 @@ $VAGRANT_BASE_FOLDER=$env:VAGRANT_BASE_FOLDER
 
 #Tidy up VAGRANT directory if it exists
 $p=$hostname +"."+ $domain
-echo "path is $p"
+
+.\revokecert.ps1 $puppet $environment $p
+
 
 if (Test-Path $VAGRANT_BASE_FOLDER\$environment\$p)
 {
@@ -63,7 +67,7 @@ write-output "        guest.winrm.username = ""$user""" |out-file -encoding asci
 write-output "        guest.winrm.password=""$password""" |out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
 write-output "        guest.winrm.timeout=3600" |out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
 write-output "        guest.windows.set_work_network" |out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
-write-output "        guest.vm.network :forwarded_port, guest:5985, host:5985, auto_correct: true" |out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
+write-output "        guest.vm.network :forwarded_port, guest:5985, host:5985, id:""winrm"", auto_correct: true" |out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
 write-output "        guest.vm.network ""public_network"", :bridge => 'Ethernet'" |out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
 write-output "        guest.vm.provider :virtualbox do |vb|" |out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
 write-output "            vb.gui = true" |out-file -encoding ascii -append $VAGRANT_BASE_FOLDER\$environment\$p\vagrantfile
@@ -93,4 +97,3 @@ mkisofs -l -J -r -V "METADATA" -o ".\$ip" "ISO"
 
 vagrant up
 #xmppalert -m "Build complete, please check puppet dashboard to see deployment status" -c bothouse@conference.gibber.devops.local
-pause

@@ -1,5 +1,2 @@
 Box,OS,Host,Domain,Puppetmaster,Environment,SysprepUser,SysprepPassword,Classes
-Win2008,Windows,node1,devops.local,puppet.devops.local,vagrantpoc,vagrant,Vag-rant1,webserver:coreops
-Win2008,Windows,node2,devops.local,puppet.devops.local,vagrantpoc,vagrant,Vag-rant1,webserver:coreops
-Win2008,Windows,node3,devops.local,puppet.devops.local,vagrantpoc,vagrant,Vag-rant1,webserver:coreops
-Win2008,Windows,node4,devops.local,puppet.devops.local,vagrantpoc,vagrant,Vag-rant1,webserver:coreops
+Win2008,windows,node3,devops.local,puppet.devops.local,vagrantpoc,vagrant,Vag-rant1,webserver:coreops
