@@ -1,0 +1,4 @@
+Hostname:node3:
+PuppetFQDN:puppet.devops.local:
+Domain:devops.local:
+Environment:vagrantpoc:

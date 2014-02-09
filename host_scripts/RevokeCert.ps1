@@ -8,18 +8,26 @@ Function RevokeCert()
 param([string]$pm,[string]$en,[string]$ce)
     $uri="https://$($pm):8140/$($en)/certificate_status/$($ce)"
     invoke-restmethod -Method PUT -uri $uri -Headers @{"Content-Type"="text/pson"} -Body "{""desired_state"":""revoked""}"
+    trap
+    {"";continue}
 }
 Function CertStatus()
 {
     param([string]$pm,[string]$en,[string]$ce)
     $uri="https://$($pm):8140/$($en)/certificate_status/$($ce)"
     invoke-restmethod -uri $uri -Headers @{"Accept"="pson"}
+    trap
+    {"";continue}
+
 }
 Function DeleteCertData()
 {
     param([string]$pm,[string]$en,[string]$ce)
     $uri="https://$($pm):8140/$($en)/certificate_status/$($ce)"
     invoke-restmethod -Method DELETE -uri $uri -Headers @{"Accept"="pson"}
+    trap
+    {"";continue}
+
 }
 
 
@@ -31,6 +39,4 @@ $obj=$null
 $obj=CertStatus $puppetmaster $environment $certificate
 $obj
 DeleteCertData $puppetmaster $environment $certificate
-$obj=$null
-$obj=CertStatus $puppetmaster $environment $certificate
-$obj
+

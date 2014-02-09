@@ -21,25 +21,27 @@ param([string]$pm,[string]$en,[string]$ce)
 
 $flag=0
 $signed=0
-do{
-    $requeststatus=$null
-    $obj=$null
-    $obj=GetCertState $puppetmaster $environment $certificate
-    $flag++;
-    if ($obj -ne $null)
+do
     {
-        if ($obj.state -eq "requested")
-        {
-            $o=SignCert $puppetmaster $environment $certificate
-            $signed=1
-            $obj=$null            
-        }
-        if (($obj.state -eq "signed") -and ($signed -eq 1))
-        {
-            $flag=20
-        }
-    }
-    $flag
-    Start-Sleep -s 15
-}while ( $flag -lt 20)
+            $flag++;
+            $requeststatus=$null
+            $obj=$null
+            $obj=GetCertState $puppetmaster $environment $certificate
+            if ($obj -ne $null)
+            {
+                if ($obj.state -eq "requested")
+                {
+                    $o=SignCert $puppetmaster $environment $certificate
+                    $signed=1
+                    $obj=$null            
+                }
+                if (($obj.state -eq "signed") -and ($signed -eq 1))
+                {
+                    $flag=100
+                }
+            }
+            trap { ".";continue}
+            Start-Sleep -s 15
+        
+    }while ( $flag -lt 100)
 
