@@ -29,7 +29,7 @@ Function DeleteCertData()
     {"";continue}
 
 }
-
+"Removing data for $($certificate)"
 
 $obj=$null
 $obj=CertStatus $puppetmaster $environment $certificate

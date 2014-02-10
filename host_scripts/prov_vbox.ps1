@@ -71,3 +71,4 @@ c:\github\virtualbox\tools\mkisofs -l -J -r -V "METADATA" -o ".\$ip" "ISO"
 Start-Process powershell -argument  "c:\github\virtualbox\host_scripts\signcert.ps1 $puppet $environment $p"
 
 vagrant up
+pause

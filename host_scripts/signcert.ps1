@@ -17,7 +17,7 @@ param([string]$pm,[string]$en,[string]$ce)
 
 
 
-
+"Waiting for a request for $($certificate) to be generated"
 
 $flag=0
 $signed=0
@@ -44,4 +44,4 @@ do
             Start-Sleep -s 15
         
     }while ( $flag -lt 100)
-
+pause
