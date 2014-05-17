@@ -44,4 +44,4 @@ do
             Start-Sleep -s 15
         
     }while ( $flag -lt 100)
-pause
+
